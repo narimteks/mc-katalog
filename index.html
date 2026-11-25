@@ -179,8 +179,8 @@
    НАСТРОЙКИ — меняются при запуске на сервере
    ===================================================================== */
 const CONFIG = {
-  BOT_USERNAME: 'YOUR_BOT_USERNAME',  // username бота assistant без @
-  APP_SHORT_NAME: 'katalog',          // короткое имя Mini App из BotFather (/newapp)
+  BOT_USERNAME: 'moltocaldoassistant_bot',  // username бота assistant без @
+  APP_SHORT_NAME: 'katalog',          // короткое имя Mini App из BotFather (/newapp); '' = главный Mini App бота
   API_BASE: '',                       // '' = демо-режим (заявки не уходят); потом 'https://<адрес сервера>'
   CATALOG_URL: 'catalog.json',        // файл, который создаёт export_catalog.py
   MANAGER_PHONE: '+998 91 105 56 00',
@@ -212,7 +212,7 @@ const I18N = {
     demo_done:"Demo rejim: so'rov hech qayerga yuborilmadi.",
     share_phone:'Telefon raqamni ulashish', thanks:'Rahmat!', sending:'Yuborilmoqda…', error:"Xatolik. Keyinroq urinib ko'ring",
     same_price:"Narxlar do'konlardagi bilan bir xil", updated:'Yangilandi', demo:"DEMO · test ma'lumotlar",
-    art:'Art.', catalog:'Katalog', copied:'Havola nusxalandi', stores_h:"Do'konlarimiz", manager:'Menejer'
+    art:'Art.', catalog:'Katalog', copied:'Havola nusxalandi', not_ready:'Bu tugma hali sozlanmagan', stores_h:"Do'konlarimiz", manager:'Menejer'
   },
   ru: {
     all:'Все', new_cat:'Новинки', search:'Поиск по артикулу или названию',
@@ -230,7 +230,7 @@ const I18N = {
     demo_done:'Демо-режим: заявка никуда не отправлялась.',
     share_phone:'Поделиться номером', thanks:'Спасибо!', sending:'Отправляем…', error:'Ошибка. Попробуйте позже',
     same_price:'Цены такие же, как в магазинах', updated:'Обновлено', demo:'ДЕМО · тестовые данные',
-    art:'Арт.', catalog:'Каталог', copied:'Ссылка скопирована', stores_h:'Наши магазины', manager:'Менеджер'
+    art:'Арт.', catalog:'Каталог', copied:'Ссылка скопирована', not_ready:'Кнопка ещё не настроена', stores_h:'Наши магазины', manager:'Менеджер'
   },
   en: {
     all:'All', new_cat:'New in', search:'Search by article or name',
@@ -248,7 +248,7 @@ const I18N = {
     demo_done:'Demo mode: the request was not sent anywhere.',
     share_phone:'Share phone number', thanks:'Thank you!', sending:'Sending…', error:'Error. Please try later',
     same_price:'Prices are the same as in stores', updated:'Updated', demo:'DEMO · test data',
-    art:'Art.', catalog:'Catalogue', copied:'Link copied', stores_h:'Our stores', manager:'Manager'
+    art:'Art.', catalog:'Catalogue', copied:'Link copied', not_ready:'Not configured yet', stores_h:'Our stores', manager:'Manager'
   }
 };
 
@@ -630,13 +630,19 @@ async function confirmReserve(btn){
 }
 
 /* ---------- «Спросить» и «Отправить подруге» ---------- */
+// защита: ссылка уходит только если username похож на настоящего бота (…bot)
+const BOT_OK = /^[A-Za-z0-9_]{5,32}$/.test(CONFIG.BOT_USERNAME) && /bot$/i.test(CONFIG.BOT_USERNAME);
 function askManager(){
+  if (!BOT_OK) { toast(t('not_ready')); return; }
   const url = `https://t.me/${CONFIG.BOT_USERNAME}?start=ask_${encodeURIComponent(S.pid)}`;
   if (IN_TG) tg.openTelegramLink(url); else window.open(url, '_blank');
 }
 function shareItem(){
+  if (!BOT_OK) { toast(t('not_ready')); return; }
   const it = BY_ID[S.pid];
-  const link = `https://t.me/${CONFIG.BOT_USERNAME}/${CONFIG.APP_SHORT_NAME}?startapp=p_${encodeURIComponent(it.id)}`;
+  const link = CONFIG.APP_SHORT_NAME
+    ? `https://t.me/${CONFIG.BOT_USERNAME}/${CONFIG.APP_SHORT_NAME}?startapp=p_${encodeURIComponent(it.id)}`
+    : `https://t.me/${CONFIG.BOT_USERNAME}?startapp=p_${encodeURIComponent(it.id)}`;
   const text = `Molto Caldo · ${titleOf(it)} · ${fmtPrice(it.price)}`;
   const share = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
   if (IN_TG) { tg.openTelegramLink(share); return; }
