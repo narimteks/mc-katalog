@@ -9,6 +9,7 @@
   :root{
     --ink:#111111; --paper:#ffffff; --soft:#F4F1EC; --line:#E6E1D9; --muted:#8C867E;
     --bronze:#A47A4D; --bronze-2:#86603A; --bronze-soft:#F3EBE1;
+    --promo:#C0262D; --promo-soft:#FDF2F2;     /* цвет рассрочки 0% — заметный */
     --serif:"Didot","Bodoni 72","Bodoni MT","Playfair Display","Times New Roman",serif;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   }
@@ -82,9 +83,15 @@
   .pv-top .t{flex:1;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);padding-left:4px}
   .pv-top button{padding:8px}
   .pv-top .fav-on{color:var(--bronze)} .pv-top .fav-on svg.i{fill:var(--bronze)}
-  .pv-photo{position:relative;aspect-ratio:4/5;background:var(--soft);display:flex;align-items:center;justify-content:center;overflow:hidden}
-  .pv-photo img{width:100%;height:100%;object-fit:cover}
-  .pv-photo svg.sil{height:78%}
+  .pv-photo{position:relative;aspect-ratio:3/4;background:var(--soft);overflow:hidden}
+  .gal{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .gal::-webkit-scrollbar{display:none}
+  .gal .sl{flex:0 0 100%;height:100%;scroll-snap-align:center;display:flex;align-items:center;justify-content:center}
+  .gal .sl img{width:100%;height:100%;object-fit:cover;display:block}
+  .gal .sl svg.sil{height:78%}
+  .dots{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:6px;pointer-events:none}
+  .dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.75);box-shadow:0 0 0 1px rgba(0,0,0,.18)}
+  .dots i.on{background:var(--ink)}
   .pv-body{padding:18px 18px 40px}
   .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
   .pv-title{font-family:var(--serif);font-weight:400;font-size:26px;letter-spacing:.02em;margin:6px 0 4px}
@@ -109,11 +116,33 @@
   .row .st{font-size:13px;text-align:right}
   .row .st.ok{color:var(--ink)} .row .st.last{color:var(--bronze-2)} .row .st.no{color:#BDB6AD}
   .row.pref .sn::before{content:"";display:inline-block;width:6px;height:6px;background:var(--bronze);margin-right:7px;vertical-align:middle}
+  .stores .row{width:100%;text-align:left;cursor:pointer;padding-left:10px;padding-right:10px}
+  .stores .row.on{background:var(--bronze-soft);box-shadow:inset 3px 0 0 var(--bronze)}
+  .stores .row.on .sn{font-weight:600}
+  .row .st.soon{color:var(--muted)}
+  .legend{font-size:11.5px;color:var(--muted);margin-top:9px;line-height:1.6}
+  .hint{font-size:12px;color:var(--muted);margin-top:9px}
+  .sec.flash{animation:flash2 .7s ease 2}
+  @keyframes flash2{50%{background:var(--bronze-soft)}}
   .btn{display:flex;width:100%;align-items:center;justify-content:center;gap:8px;height:50px;margin-top:10px;border:1px solid var(--ink);font-size:14px;letter-spacing:.06em}
   .btn.primary{background:var(--ink);color:#fff;margin-top:26px}
   .btn.primary:disabled{background:#BDB6AD;border-color:#BDB6AD}
   .btn.link{border:0;height:44px;color:var(--ink);text-decoration:underline;text-underline-offset:4px}
   .note{font-size:12px;color:var(--muted);text-align:center;margin:14px 0 0}
+  .nas{display:inline-block;margin-top:6px;font-size:11px;font-weight:600;color:var(--promo);border:1px solid var(--promo);background:var(--promo-soft);padding:2px 6px;white-space:nowrap}
+  .pv-nas{display:inline-block;margin-top:10px;font-size:13px;line-height:1.45;color:var(--promo);border:1.5px solid var(--promo);background:var(--promo-soft);padding:7px 11px}
+  .pv-nas b{font-weight:700}
+  .pay small{color:var(--promo);font-weight:700;margin-left:4px}
+  .pay.on small{color:#FFB4B4}
+  .pays{display:flex;gap:6px;flex-wrap:wrap}
+  .pay{border:1px solid var(--line);padding:9px 12px;font-size:13px}
+  .pay.on{background:var(--ink);border-color:var(--ink);color:#fff}
+  .payinfo{font-size:12px;color:var(--muted);margin-top:9px}
+  .kvs{margin-top:16px;border-top:1px solid var(--line)}
+  .kv{display:flex;gap:14px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .kv span{width:84px;flex:none;color:var(--muted)}
+  .kv b{font-weight:400}
+  .desc{font-size:13px;color:#4A4743;line-height:1.55;margin:14px 0 0;white-space:pre-line}
 
   /* ---------- нижняя шторка ---------- */
   .veil{position:fixed;inset:0;z-index:30;background:rgba(17,17,17,.42);opacity:0;pointer-events:none;transition:opacity .2s}
@@ -184,6 +213,12 @@ const CONFIG = {
   API_BASE: '',                       // '' = демо-режим (заявки не уходят); потом 'https://<адрес сервера>'
   CATALOG_URL: 'catalog.json',        // файл, который создаёт export_catalog.py
   MANAGER_PHONE: '+998 91 105 56 00',
+  MANAGER_USERNAME: 'moltocaldo_manager', // «Спросить менеджера» открывает его личку с готовым текстом
+  SHARE_VIA: 'app',                   // 'app' — ссылка «подруге» открывает каталог; 'bot' — бот присылает фото-карточку (после обновления бота)
+  PHOTO_BASE: 'foto_tayyor/',          // папка от prepare_photos.py: foto_tayyor/s/… (сетка) и foto_tayyor/l/… (карточка)
+  NASIYA: {                           // рассрочка: срок, сервисы, округление суммы в месяц
+    months: 3, providers: ['Uzum Nasiya', 'Alif Nasiya'], min_price: 0, round_to: 100
+  },                                  // NASIYA: null — убрать рассрочку из приложения
   PAGE_SIZE: 40,                      // сколько карточек догружать за раз
   FAV_LIMIT: 300
 };
@@ -205,7 +240,12 @@ const I18N = {
     new:'Yangi', sale:'Chegirma', favorites:'Saqlanganlar',
     empty:"Bu filtrlar bo'yicha model topilmadi", empty_fav:"Hali hech narsa saqlanmagan. Yoqqan modelni ♡ bilan belgilang",
     color:'Rang', availability:"Do'konlarda", in_stock:'Bor', last_one:'Oxirgi dona', none:"Yo'q", any_size:"Barcha o'lchamlar", all_stores:"Barcha do'konlar",
-    reserve:"Ertagacha olib qo'yish", ask:"Menejerdan so'rash", share:'Dugonaga yuborish',
+    reserve:"Olib qo'yish", reserve_soon:"Shu do'konga buyurtma berish", ask:"Menejerdan so'rash", share:'Dugonaga yuborish',
+    pick_store_h:"Qaysi do'kondan olasiz?", now:'hozir bor', soon:'tez orada', pick_store_first:"Do'konni tanlang",
+    legend:"✓ hozir do'konda bor · 🚚 qolgan do'konlarga tez orada keltiramiz", pick_size_hint:"O'lchamni tanlang — qaysi do'kondan olishni ko'rsatamiz",
+    order_title:'Buyurtma', soon_note:"Bu o'lcham shu do'konda hozir yo'q. Menejer qachon keltirishimizni Telegramda yozadi.",
+    pay_h:"To'lov", pay_cash:'Naqd / karta', mon:'oy', nas_line:(m,x)=>`0% · ${m} oy — oyiga ≈ ${x}`, nas_short:(m,x)=>`<b>0%</b> · ${m} oyga bo'lib to'lash — oyiga ≈ ${x}`, nas_grid:(m,x)=>`0% · ${m} × ${x}`,
+    ask_text:m=>`Assalomu alaykum! Shu model qiziqtirdi: ${m}`, share_text:(n,p)=>`${n} — ${p}. Molto Caldo katalogida ko'ring 👇`,
     pick_size_first:"Avval o'lchamni tanlang", pick_store:"Qaysi do'konda?", confirm:"So'rov yuborish", close:'Yopish',
     reserve_title:"Olib qo'yish", reserve_note:"Menejer do'kon bilan tekshirib, Telegramda sizga yozadi.",
     reserve_done:"So'rov yuborildi", reserve_done_text:"Rahmat! Menejer tez orada siz bilan bog'lanadi.",
@@ -223,7 +263,12 @@ const I18N = {
     new:'New', sale:'Скидка', favorites:'Избранное',
     empty:'По этим фильтрам ничего не найдено', empty_fav:'В избранном пока пусто. Отмечайте модели значком ♡',
     color:'Цвет', availability:'Наличие в магазинах', in_stock:'Есть', last_one:'Последняя', none:'Нет', any_size:'Все размеры', all_stores:'Все магазины',
-    reserve:'Отложить до завтра', ask:'Спросить менеджера', share:'Отправить подруге',
+    reserve:'Отложить', reserve_soon:'Заказать в этот магазин', ask:'Спросить менеджера', share:'Отправить подруге',
+    pick_store_h:'В каком магазине заберёте?', now:'есть', soon:'скоро', pick_store_first:'Выберите магазин',
+    legend:'✓ есть в магазине · 🚚 в остальные магазины привезём в ближайшее время', pick_size_hint:'Выберите размер — покажем, в каком магазине его забрать',
+    order_title:'Заказ', soon_note:'Сейчас этого размера в магазине нет. Менеджер напишет в Telegram, когда привезём.',
+    pay_h:'Оплата', pay_cash:'Наличные / карта', mon:'мес.', nas_line:(m,x)=>`0% · ${m} мес. — ≈ ${x} в месяц`, nas_short:(m,x)=>`<b>0%</b> · рассрочка на ${m} мес. — ≈ ${x} в месяц`, nas_grid:(m,x)=>`0% · ${m} × ${x}`,
+    ask_text:m=>`Здравствуйте! Интересует модель: ${m}`, share_text:(n,p)=>`${n} — ${p}. Смотрите в каталоге Molto Caldo 👇`,
     pick_size_first:'Сначала выберите размер', pick_store:'В каком магазине?', confirm:'Отправить заявку', close:'Закрыть',
     reserve_title:'Отложить', reserve_note:'Менеджер проверит наличие в магазине и напишет вам в Telegram.',
     reserve_done:'Заявка отправлена', reserve_done_text:'Спасибо! Менеджер скоро свяжется с вами.',
@@ -241,7 +286,12 @@ const I18N = {
     new:'New', sale:'Sale', favorites:'Saved',
     empty:'Nothing matches these filters', empty_fav:'Nothing saved yet. Tap ♡ on a model you like',
     color:'Colour', availability:'In stores', in_stock:'In stock', last_one:'Last one', none:'—', any_size:'All sizes', all_stores:'All stores',
-    reserve:'Hold until tomorrow', ask:'Ask a manager', share:'Send to a friend',
+    reserve:'Hold', reserve_soon:'Order to this store', ask:'Ask a manager', share:'Send to a friend',
+    pick_store_h:'Which store will you pick up from?', now:'in stock', soon:'soon', pick_store_first:'Choose a store',
+    legend:'✓ in this store now · 🚚 we will bring it to other stores soon', pick_size_hint:'Choose a size and we will show where to pick it up',
+    order_title:'Order', soon_note:'This size is not in that store right now. A manager will message you in Telegram when it arrives.',
+    pay_h:'Payment', pay_cash:'Cash / card', mon:'months', nas_line:(m,x)=>`0% · ${m} months — ≈ ${x} / month`, nas_short:(m,x)=>`<b>0%</b> · ${m} interest-free payments of ≈ ${x}`, nas_grid:(m,x)=>`0% · ${m} × ${x}`,
+    ask_text:m=>`Hello! I am interested in this model: ${m}`, share_text:(n,p)=>`${n} — ${p}. See it in the Molto Caldo catalogue 👇`,
     pick_size_first:'Choose a size first', pick_store:'Which store?', confirm:'Send request', close:'Close',
     reserve_title:'Hold', reserve_note:'A manager will check the store and message you in Telegram.',
     reserve_done:'Request sent', reserve_done_text:'Thank you! A manager will contact you soon.',
@@ -260,7 +310,31 @@ const CATS = {
   'Жилет':  {chip:{uz:'Jilet',ru:'Жилеты',en:'Vests'},        one:{uz:'Jilet',ru:'Жилет',en:'Vest'},           shape:'vest'},
   'Платье': {chip:{uz:"Ko'ylak",ru:'Платья',en:'Dresses'},    one:{uz:"Ko'ylak",ru:'Платье',en:'Dress'},       shape:'dress'},
   'Брюки':  {chip:{uz:'Shim',ru:'Брюки',en:'Trousers'},       one:{uz:'Shim',ru:'Брюки',en:'Trousers'},        shape:'trousers'},
-  'Юбка':   {chip:{uz:'Yubka',ru:'Юбки',en:'Skirts'},         one:{uz:'Yubka',ru:'Юбка',en:'Skirt'},           shape:'skirt'}
+  'Юбка':   {chip:{uz:'Yubka',ru:'Юбки',en:'Skirts'},         one:{uz:'Yubka',ru:'Юбка',en:'Skirt'},           shape:'skirt'},
+  'Пуховик':{chip:{uz:'Puxovik',ru:'Пуховики',en:'Puffer coats'}, one:{uz:'Puxovik',ru:'Пуховик',en:'Puffer coat'}, shape:'jacket'},
+  'Шуба':   {chip:{uz:'Shuba',ru:'Шубы',en:'Fur coats'},       one:{uz:'Shuba',ru:'Шуба',en:'Fur coat'},        shape:'coat'},
+  'Тренч':  {chip:{uz:'Trench',ru:'Тренчи',en:'Trench coats'}, one:{uz:'Trench',ru:'Тренч',en:'Trench coat'},   shape:'trench'},
+  'Костюм': {chip:{uz:'Kostyum',ru:'Костюмы',en:'Suits'},      one:{uz:'Kostyum',ru:'Костюм',en:'Suit'},        shape:'jacket'},
+  'Жакет':  {chip:{uz:'Jaket',ru:'Жакеты',en:'Blazers'},       one:{uz:'Jaket',ru:'Жакет',en:'Blazer'},         shape:'jacket'},
+  'Пиджак': {chip:{uz:'Pidjak',ru:'Пиджаки',en:'Blazers'},     one:{uz:'Pidjak',ru:'Пиджак',en:'Blazer'},       shape:'jacket'},
+  'Кардиган':{chip:{uz:'Kardigan',ru:'Кардиганы',en:'Cardigans'}, one:{uz:'Kardigan',ru:'Кардиган',en:'Cardigan'}, shape:'coat'},
+  'Худи':   {chip:{uz:'Xudi',ru:'Худи',en:'Hoodies'},          one:{uz:'Xudi',ru:'Худи',en:'Hoodie'},           shape:'jacket'},
+  'Плащевка':{chip:{uz:'Plashovka',ru:'Плащевки',en:'Light jackets'}, one:{uz:'Plashovka',ru:'Плащевка',en:'Light jacket'}, shape:'jacket'},
+  'Американка':{chip:{uz:'Amerikanka',ru:'Американки',en:'Amerikanka'}, one:{uz:'Amerikanka',ru:'Американка',en:'Amerikanka'}, shape:'jacket'},
+  'Свитер': {chip:{uz:'Sviter',ru:'Свитеры',en:'Sweaters'},     one:{uz:'Sviter',ru:'Свитер',en:'Sweater'},      shape:'top'},
+  'Джемпер':{chip:{uz:'Jemper',ru:'Джемперы',en:'Jumpers'},     one:{uz:'Jemper',ru:'Джемпер',en:'Jumper'},      shape:'top'},
+  'Кофта':  {chip:{uz:'Kofta',ru:'Кофты',en:'Knitwear'},        one:{uz:'Kofta',ru:'Кофта',en:'Knit top'},       shape:'top'},
+  'Водолазка':{chip:{uz:'Vodolazka',ru:'Водолазки',en:'Turtlenecks'}, one:{uz:'Vodolazka',ru:'Водолазка',en:'Turtleneck'}, shape:'top'},
+  'Лонгслив':{chip:{uz:'Longsliv',ru:'Лонгсливы',en:'Long sleeves'}, one:{uz:'Longsliv',ru:'Лонгслив',en:'Long sleeve'}, shape:'top'},
+  'Батник': {chip:{uz:'Batnik',ru:'Батники',en:'Fitted shirts'}, one:{uz:'Batnik',ru:'Батник',en:'Fitted shirt'}, shape:'top'},
+  'Рубашка':{chip:{uz:'Rubashka',ru:'Рубашки',en:'Shirts'},     one:{uz:'Rubashka',ru:'Рубашка',en:'Shirt'},     shape:'top'},
+  'Блузка': {chip:{uz:'Bluzka',ru:'Блузки',en:'Blouses'},       one:{uz:'Bluzka',ru:'Блузка',en:'Blouse'},       shape:'top'},
+  'Майка':  {chip:{uz:'Mayka',ru:'Майки',en:'Tank tops'},       one:{uz:'Mayka',ru:'Майка',en:'Tank top'},       shape:'vest'},
+  'Топик':  {chip:{uz:'Top',ru:'Топы',en:'Tops'},               one:{uz:'Top',ru:'Топ',en:'Top'},                shape:'vest'},
+  'Шарф':   {chip:{uz:'Sharf',ru:'Шарфы',en:'Scarves'},         one:{uz:'Sharf',ru:'Шарф',en:'Scarf'},           shape:'scarf'},
+  'Платок': {chip:{uz:"Ro'mol",ru:'Платки',en:'Shawls'},        one:{uz:"Ro'mol",ru:'Платок',en:'Shawl'},        shape:'scarf'},
+  'Перчатка':{chip:{uz:"Qo'lqop",ru:'Перчатки',en:'Gloves'},    one:{uz:"Qo'lqop",ru:'Перчатки',en:'Gloves'},    shape:'glove'},
+  'Прочее': {chip:{uz:'Boshqa',ru:'Прочее',en:'Other'},        one:{uz:'',ru:'',en:''},                         shape:'coat'}
 };
 /* ---------- цвета OX → подписи и оттенок кружка ---------- */
 const COLORS = {
@@ -272,9 +346,41 @@ const COLORS = {
   'Хаки':       {uz:'Xaki',      ru:'Хаки',       en:'Khaki',  hex:'#6E6A4F'},
   'Бордо':      {uz:'Bordo',     ru:'Бордо',      en:'Burgundy', hex:'#5D1F27'},
   'Темно-синий':{uz:"To'q ko'k", ru:'Тёмно-синий',en:'Navy',   hex:'#1F2A44'},
+  'Табачный':   {uz:'Tamaki rang', ru:'Табачный', en:'Tobacco', hex:'#7A5A3A'},
+  'Терракотовый':{uz:'Terrakota', ru:'Терракотовый', en:'Terracotta', hex:'#B5603F'},
+  'Белый':      {uz:'Oq',        ru:'Белый',      en:'White',  hex:'#F7F6F2'},
+  'Розовый':    {uz:'Pushti',    ru:'Розовый',    en:'Pink',   hex:'#E8B7BE'},
+  'Пудровый':   {uz:'Pudra',     ru:'Пудровый',   en:'Powder', hex:'#E5C9C0'},
+  'Пудра':      {uz:'Pudra',     ru:'Пудра',      en:'Powder', hex:'#E5C9C0'},
+  'Голубой':    {uz:'Havorang',  ru:'Голубой',    en:'Light blue', hex:'#A9C4DB'},
+  'Синий':      {uz:"Ko'k",      ru:'Синий',      en:'Blue',   hex:'#2D4A8A'},
+  'Зеленый':    {uz:'Yashil',    ru:'Зелёный',    en:'Green',  hex:'#3F6B4A'},
+  'Темно-зеленый':{uz:"To'q yashil", ru:'Тёмно-зелёный', en:'Dark green', hex:'#24402E'},
+  'Оливковый':  {uz:'Zaytun rang', ru:'Оливковый', en:'Olive', hex:'#6B6B3A'},
+  'Графит':     {uz:'Grafit',    ru:'Графит',     en:'Graphite', hex:'#3C3D3F'},
+  'Темно-серый':{uz:"To'q kulrang", ru:'Тёмно-серый', en:'Dark grey', hex:'#55565A'},
+  'Светло-серый':{uz:'Och kulrang', ru:'Светло-серый', en:'Light grey', hex:'#C4C3C0'},
+  'Шоколадный': {uz:'Shokolad',  ru:'Шоколадный', en:'Chocolate', hex:'#4A2F22'},
+  'Мокко':      {uz:'Mokko',     ru:'Мокко',      en:'Mocha',  hex:'#7B5B47'},
+  'Капучино':   {uz:'Kapuchino', ru:'Капучино',   en:'Cappuccino', hex:'#A88C74'},
+  'Песочный':   {uz:'Qum rang',  ru:'Песочный',   en:'Sand',   hex:'#D2BE9C'},
+  'Красный':    {uz:'Qizil',     ru:'Красный',    en:'Red',    hex:'#A3262A'},
+  'Изумрудный': {uz:'Zumrad',    ru:'Изумрудный', en:'Emerald', hex:'#1F6B55'},
+  'Фиолетовый': {uz:'Binafsha',  ru:'Фиолетовый', en:'Purple', hex:'#5B3A74'},
+  'Сиреневый':  {uz:'Nafarmon',  ru:'Сиреневый',  en:'Lilac',  hex:'#B7A2C8'},
+  'Горчичный':  {uz:'Xantal rang', ru:'Горчичный', en:'Mustard', hex:'#C29A2E'},
+  'Бирюзовый':  {uz:'Feruza',    ru:'Бирюзовый',  en:'Turquoise', hex:'#3E9C9B'},
+  'Мятный':     {uz:'Yalpiz rang', ru:'Мятный',   en:'Mint',   hex:'#AFD5C3'},
+  'Персиковый': {uz:'Shaftoli rang', ru:'Персиковый', en:'Peach', hex:'#E9B79A'},
   'Кэмел':      {uz:'Kemel',     ru:'Кэмел',      en:'Camel',  hex:'#B07D4B'}
 };
 
+// свойства модели из OX → подписи в карточке
+const INFO_LABELS = {
+  uz: {composition:'Mato', silhouette:'Qolip', length:'Uzunlik', collar:'Yoqa', style:'Uslub'},
+  ru: {composition:'Состав', silhouette:'Силуэт', length:'Длина', collar:'Воротник', style:'Стиль'},
+  en: {composition:'Fabric', silhouette:'Fit', length:'Length', collar:'Collar', style:'Style'}
+};
 const PR = {
   all:{}, u1:{max:1e6}, r12:{min:1e6,max:2e6}, r23:{min:2e6,max:3e6}, o3:{min:3e6}
 };
@@ -297,7 +403,10 @@ const SHAPES = {
   vest:    {d:'M40 12 50 18 60 12 70 18 70 36 72 100 28 100 30 36 30 18Z', x:'M50 18V100M29 50H71M29 66H71M28 82H72'},
   dress:   {d:'M41 12 50 18 59 12 66 18 64 44 60 52 76 120 24 120 40 52 36 44 34 18Z', x:'M40 52H60'},
   trousers:{d:'M32 14H68L72 120H55L50 46 45 120H28Z', x:'M32 22H68'},
-  skirt:   {d:'M34 22H66L76 112H24Z', x:'M34 30H66'}
+  skirt:   {d:'M34 22H66L76 112H24Z', x:'M34 30H66'},
+  top:     {d:'M39 16 50 21 61 16 77 23 87 72 78 75 71 46 71 100 29 100 29 46 22 75 13 72 23 23Z', x:'M44 17Q50 26 56 17M29 94H71M22 69 13 66M78 69 87 66'},
+  scarf:   {d:'M27 24Q50 33 73 24L73 37Q50 46 27 37Z M37 39 33 106 47 106 48 43Z M56 43 59 98 70 96 64 39Z', x:'M33 99H47M59 91 70 89M41 44 39 100'},
+  glove:   {d:'M37 118V66L29 44Q28 37 34 37Q37 37 39 42L42 54V25Q42 19 47 19T52 25V50 19Q52 13 57 13T62 19V50 24Q62 18 67 18T72 24V56L75 48Q77 42 82 44T84 52L74 84V118Z', x:'M37 106H74M52 50V58M62 50V58'}
 };
 
 /* =====================================================================
@@ -331,20 +440,36 @@ const KV = {
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const S = { lang:'uz', cat:'all', size:null, store:null, price:'all', sort:'default', q:'', favOnly:false,
-            list:[], shown:0, pid:null, pcolor:null, psize:null, rstore:null, entryDirect:false };
-let ITEMS = [], BY_ID = {}, STORES = [], DATA = null, DEMO = false, FAVS = new Set();
+            list:[], shown:0, pid:null, pcolor:null, psize:null, pstore:null, pay:'cash', entryDirect:false };
+let ITEMS = [], BY_ID = {}, BY_KEY = {}, STORES = [], DATA = null, DEMO = false, FAVS = new Set();
 
 const t = (k, ...a) => { const v = (I18N[S.lang] || I18N.uz)[k]; return typeof v === 'function' ? v(...a) : (v == null ? k : v); };
 const L = o => (o && typeof o === 'object') ? (o[S.lang] || o.uz || Object.values(o)[0]) : (o || '');
 const catOne = c => CATS[c] ? CATS[c].one[S.lang] : c;
 const catChip = c => CATS[c] ? CATS[c].chip[S.lang] : c;
-const colorName = c => COLORS[c] ? COLORS[c][S.lang] : c;
-const colorHex = c => COLORS[c] ? COLORS[c].hex : '#BDB6AD';
+// цвет из OX: «Чёрный - Black» → ищем по русской части (ё = е); нет в словаре — показываем как в OX
+const normC = c => String(c || '').split(' - ')[0].trim().toLowerCase().replace(/ё/g, 'е');
+const COLOR_IDX = {}; Object.entries(COLORS).forEach(([k, v]) => { COLOR_IDX[normC(k)] = v; });
+function colorName(c){
+  const v = COLOR_IDX[normC(c)];
+  if (v) return v[S.lang];
+  const parts = String(c || '').split(' - ');
+  return (S.lang === 'en' && parts[1]) ? parts[1].trim() : parts[0].trim();
+}
+const colorHex = c => (COLOR_IDX[normC(c)] || {}).hex || '#BDB6AD';
 const titleOf = it => `${catOne(it.category)} ${it.name}`;
 
 function fmtPrice(n){
   const s = Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, S.lang === 'en' ? ',' : ' ');
   return s + (S.lang === 'uz' ? " so'm" : S.lang === 'ru' ? ' сум' : ' UZS');
+}
+// сортировка размеров: числа по возрастанию, потом буквенные (XS, S, M…)
+function sizeCmp(a, b){
+  const x = parseFloat(a), y = parseFloat(b);
+  if (!isNaN(x) && !isNaN(y)) return x - y;
+  if (!isNaN(x)) return -1;
+  if (!isNaN(y)) return 1;
+  return String(a).localeCompare(String(b));
 }
 const inRange = (p, r) => (r.min == null || p >= r.min) && (r.max == null || p < r.max);
 
@@ -354,10 +479,27 @@ function silhouette(it, color){
   const det = lum(hex) < 0.45 ? 'rgba(255,255,255,.28)' : 'rgba(0,0,0,.22)';
   return `<svg class="sil" viewBox="0 0 100 130" aria-hidden="true"><path d="${sh.d}" fill="${hex}" stroke="rgba(0,0,0,.25)" stroke-width=".7" stroke-linejoin="round"/><path d="${sh.x}" fill="none" stroke="${det}" stroke-width=".8" stroke-linecap="round"/></svg>`;
 }
-function photoHTML(it, color){
-  const url = (it.photos && it.photos[color]) || it.photo;
-  return url ? `<img src="${esc(url)}" loading="lazy" alt="${esc(titleOf(it))}">` : silhouette(it, color);
+// фото модели: it.photos = { "<цвет>": ["26-0397_1.webp", …], "*": [...] }  ("*" — фото без привязки к цвету)
+function photoList(it, color){
+  let a = [];
+  if (it.photos && typeof it.photos === 'object') a = it.photos[color] || it.photos['*'] || [];
+  if (typeof a === 'string') a = [a];
+  if (!a.length && it.photo) a = [it.photo];
+  return a;
 }
+const photoUrl = (name, size) => /^(https?:)?\/\//.test(name) || name.startsWith('/') ? name : CONFIG.PHOTO_BASE + size + '/' + name;
+function photoHTML(it, color, size){
+  const a = photoList(it, color);
+  return a.length ? `<img src="${esc(photoUrl(a[0], size || 's'))}" loading="lazy" alt="${esc(titleOf(it))}">` : silhouette(it, color);
+}
+function galleryHTML(it, color){
+  const a = photoList(it, color);
+  if (!a.length) return `<div class="gal"><div class="sl">${silhouette(it, color)}</div></div>`;
+  return `<div class="gal" id="gal">${a.map((n, i) => `<div class="sl"><img src="${esc(photoUrl(n, 'l'))}" ${i ? 'loading="lazy"' : ''} alt="${esc(titleOf(it))}"></div>`).join('')}</div>`
+       + (a.length > 1 ? `<div class="dots" id="dots">${a.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : '');
+}
+// безопасный ключ модели для ссылок (латиница, цифры, дефис)
+const keyOf = it => String(it.key || it.id).replace(/[^A-Za-z0-9-]/g, '-').slice(0, 40);
 
 /* ---------- наличие ---------- */
 function prep(it, idx){
@@ -365,10 +507,10 @@ function prep(it, idx){
   const colors = Object.keys(it.stock || {}).filter(c => {
     let any = false;
     for (const [sz, st] of Object.entries(it.stock[c])) for (const [sid, q] of Object.entries(st))
-      if (q > 0) { sizes.add(+sz); stores.add(sid); total += q; any = true; }
+      if (q > 0) { sizes.add(String(sz)); stores.add(sid); total += q; any = true; }
     return any;
   });
-  it._idx = idx; it._colors = colors; it._sizes = [...sizes].sort((a, b) => a - b); it._stores = stores; it._total = total;
+  it._idx = idx; it._colors = colors; it._sizes = [...sizes].sort(sizeCmp); it._stores = stores; it._total = total;
   it._q = [it.id, it.name, it.category, CATS[it.category] ? Object.values(CATS[it.category].one).join(' ') : ''].join(' ').toLowerCase();
   return it;
 }
@@ -376,7 +518,7 @@ function hasStock(it, size, sid, color){
   for (const c of it._colors) {
     if (color && c !== color) continue;
     for (const [sz, st] of Object.entries(it.stock[c])) {
-      if (size != null && +sz !== size) continue;
+      if (size != null && String(sz) !== String(size)) continue;
       for (const [s, q] of Object.entries(st)) if (q > 0 && (sid == null || s === sid)) return true;
     }
   }
@@ -415,7 +557,8 @@ function renderChips(){
   const base = ITEMS.filter(it => passes(it, 'cat'));
   const cnt = {}; let nNew = 0;
   base.forEach(it => { cnt[it.category] = (cnt[it.category] || 0) + 1; if (it.new) nNew++; });
-  const order = [...new Set(ITEMS.map(i => i.category))];
+  const total = {}; ITEMS.forEach(i => { total[i.category] = (total[i.category] || 0) + 1; });
+  const order = Object.keys(total).sort((a, b) => (a === 'Прочее') - (b === 'Прочее') || total[b] - total[a]);
   const chip = (id, label, n) => `<button class="chip ${S.cat === id ? 'on' : ''}" data-cat="${esc(id)}">${esc(label)}<small>${n}</small></button>`;
   let h = chip('all', t('all'), base.length);
   if (nNew) h += chip('__new', t('new_cat'), nNew);
@@ -428,7 +571,7 @@ function renderFilters(){
   const fb = (k, label, val) => `<button class="fb ${val ? 'on' : ''}" data-f="${k}"><span>${val ? `<em>${esc(val)}</em>` : esc(label)}</span>${ICON.chev}</button>`;
   $('#filters').innerHTML = fb('size', t('size'), S.size != null ? `${t('size')} ${S.size}` : '')
                           + fb('price', t('price'), priceVal)
-                          + fb('store', t('store'), st ? st.name : '');
+                          + fb('store', t('store'), st ? L(st.name) : '');
   const active = S.size != null || S.store || S.price !== 'all' || S.sort !== 'default' || S.q || S.favOnly || S.cat !== 'all';
   $('#resetBtn').hidden = !active;
   $('#resetBtn').textContent = t('reset');
@@ -445,6 +588,7 @@ function cardHTML(it){
     </div>
     <div class="price">${fmtPrice(it.price)}</div>
     ${it.old_price ? `<div class="old">${fmtPrice(it.old_price)}</div>` : ''}
+    ${nasiyaOK(it) ? `<div class="nas">${esc(t('nas_grid', CONFIG.NASIYA.months, fmtPrice(monthly(it))))}</div>` : ''}
     <div class="title">${esc(titleOf(it))}</div>
     <div class="meta">${sz}${nc > 1 ? ' · ' + t('colors_n', nc) : ''}</div>
   </article>`;
@@ -466,7 +610,7 @@ function more(){
 }
 function renderFoot(){
   const cities = {};
-  STORES.forEach(s => { const c = L(s.city); (cities[c] = cities[c] || []).push(s.name); });
+  STORES.forEach(s => { const c = L(s.city); (cities[c] = cities[c] || []).push(L(s.name)); });
   let upd = '';
   if (DATA.updated) { const d = new Date(DATA.updated); if (!isNaN(d)) upd = `${t('updated')}: ${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
   $('#foot').innerHTML = `<h4>${t('stores_h')}</h4>`
@@ -493,7 +637,7 @@ const optRow = (attr, val, label, right, on, dis) =>
 
 function sheetSize(){
   const base = ITEMS.filter(it => passes(it, 'size'));
-  const all = [...new Set(ITEMS.flatMap(i => i._sizes))].sort((a, b) => a - b);
+  const all = [...new Set(ITEMS.flatMap(i => i._sizes))].sort(sizeCmp);
   let h = `<h3>${t('size')}</h3><div class="szgrid">`;
   h += `<button class="opt2 wide ${S.size == null ? 'on' : ''}" data-size="">${t('any_size')}<small>${base.length}</small></button>`;
   all.forEach(sz => {
@@ -518,7 +662,7 @@ function sheetStore(){
   let h = `<h3>${t('store')}</h3>` + optRow('data-store', '', t('all_stores'), base.length, !S.store);
   STORES.forEach(s => {
     const n = base.filter(it => hasStock(it, S.size, s.id)).length;
-    h += optRow('data-store', s.id, `${esc(s.name)} <small>· ${esc(L(s.city))}</small>`, n, S.store === s.id, !n && S.store !== s.id);
+    h += optRow('data-store', s.id, `${esc(L(s.name))} <small>· ${esc(L(s.city))}</small>`, n, S.store === s.id, !n && S.store !== s.id);
   });
   openSheet(h);
 }
@@ -529,7 +673,7 @@ function sheetStore(){
 function showProduct(id){
   const it = BY_ID[id]; if (!it) return;
   if (S.pid !== id) {
-    S.pid = id; S.psize = null;
+    S.pid = id; S.psize = null; S.pstore = null; S.pay = 'cash';
     S.pcolor = it._colors.find(c => S.store ? hasStock(it, S.size, S.store, c) : hasStock(it, S.size, null, c)) || it._colors[0];
     if (S.size != null && hasStock(it, S.size, null, S.pcolor)) S.psize = S.size;
   }
@@ -545,20 +689,29 @@ function hideProduct(){
 function renderProduct(){
   const it = BY_ID[S.pid]; if (!it) return;
   const c = S.pcolor, fav = FAVS.has(it.id);
-  const colorSizes = new Set(Object.entries(it.stock[c] || {}).filter(([, st]) => Object.values(st).some(q => q > 0)).map(([sz]) => +sz));
+  const colorSizes = new Set(Object.entries(it.stock[c] || {}).filter(([, st]) => Object.values(st).some(q => q > 0)).map(([sz]) => String(sz)));
   const sw = it._colors.map(col => `<button class="sw ${col === c ? 'on' : ''}" data-color="${esc(col)}" style="background:${colorHex(col)}" aria-label="${esc(colorName(col))}"></button>`).join('');
   const sz = it._sizes.map(s => `<button class="sz ${S.psize === s ? 'on' : ''}" data-psize="${s}" ${colorSizes.has(s) ? '' : 'disabled'}>${s}</button>`).join('');
-  const rows = STORES.map(s => {
-    let st;
-    if (S.psize != null) {
+  let storeSec;
+  if (S.psize == null) {
+    // размер не выбран: какие размеры есть в каждом магазине
+    const rows = STORES.map(s => {
+      const list = [...colorSizes].filter(x => qty(it, c, x, s.id) > 0).sort(sizeCmp);
+      const st = list.length ? `<span class="st ok">${list.join(' · ')}</span>` : `<span class="st no">${t('none')}</span>`;
+      return `<div class="row ${S.store === s.id ? 'pref' : ''}"><div><div class="sn">${esc(L(s.name))}</div><div class="sc">${esc(L(s.city))}</div></div>${st}</div>`;
+    }).join('');
+    storeSec = `<div class="sec" id="pvStores"><div class="sec-h">${t('availability')}</div><div class="avail">${rows}</div><div class="hint">${t('pick_size_hint')}</div></div>`;
+  } else {
+    // размер выбран: выбор магазина — ✓ есть сейчас / 🚚 привезём скоро
+    if (!S.pstore) S.pstore = defaultStore(it);
+    const rows = STORES.map(s => {
       const q = qty(it, c, S.psize, s.id);
-      st = q > 1 ? `<span class="st ok">${t('in_stock')}</span>` : q === 1 ? `<span class="st last">${t('last_one')}</span>` : `<span class="st no">${t('none')}</span>`;
-    } else {
-      const list = [...colorSizes].filter(x => qty(it, c, x, s.id) > 0).sort((a, b) => a - b);
-      st = list.length ? `<span class="st ok">${list.join(' · ')}</span>` : `<span class="st no">${t('none')}</span>`;
-    }
-    return `<div class="row ${S.store === s.id ? 'pref' : ''}"><div><div class="sn">${esc(s.name)}</div><div class="sc">${esc(L(s.city))}</div></div>${st}</div>`;
-  }).join('');
+      const st = q > 1 ? `<span class="st ok">✓ ${t('now')}</span>` : q === 1 ? `<span class="st last">✓ ${t('last_one')}</span>` : `<span class="st soon">🚚 ${t('soon')}</span>`;
+      return `<button class="row ${S.pstore === s.id ? 'on' : ''}" data-pstore="${esc(s.id)}"><div><div class="sn">${esc(L(s.name))}</div><div class="sc">${esc(L(s.city))}</div></div>${st}</button>`;
+    }).join('');
+    storeSec = `<div class="sec" id="pvStores"><div class="sec-h">${t('pick_store_h')}</div><div class="avail stores">${rows}</div><div class="legend">${t('legend')}</div></div>`;
+  }
+  const soonSel = S.psize != null && S.pstore && qty(it, c, S.psize, S.pstore) === 0;
   const showBack = !(IN_TG && can('6.1'));
   $('#pv').innerHTML = `
     <div class="pv-top">
@@ -567,51 +720,82 @@ function renderProduct(){
       <button data-act="fav" class="${fav ? 'fav-on' : ''}" aria-label="fav">${ICON.heart}</button>
       <button data-act="share" aria-label="share">${ICON.share}</button>
     </div>
-    <div class="pv-photo">${photoHTML(it, c)}${it.new ? `<span class="badge">${t('new')}</span>` : ''}</div>
+    <div class="pv-photo">${galleryHTML(it, c)}${it.new ? `<span class="badge">${t('new')}</span>` : ''}</div>
     <div class="pv-body">
-      <div class="eyebrow">${esc(catOne(it.category))} · ${t('art')} ${esc(it.id)}</div>
+      <div class="eyebrow">${esc(catOne(it.category))}${it.name !== it.id ? ` · ${t('art')} ${esc(it.id)}` : ''}</div>
       <h1 class="pv-title">${esc(it.name)}</h1>
       <div class="pv-price">${fmtPrice(it.price)}${it.old_price ? `<span class="old">${fmtPrice(it.old_price)}</span>` : ''}</div>
+      ${nasiyaOK(it) ? `<div class="pv-nas">${t('nas_short', CONFIG.NASIYA.months, esc(fmtPrice(monthly(it))))}<br>${esc(CONFIG.NASIYA.providers.join(' · '))}</div>` : ''}
+      ${infoHTML(it)}
       <div class="sec"><div class="sec-h">${t('color')}: <b>${esc(colorName(c))}</b></div><div class="swatches">${sw}</div></div>
       <div class="sec"><div class="sec-h">${t('size')}${S.psize != null ? `: <b>${S.psize}</b>` : ''}</div><div class="sizes" id="pvSizes">${sz}</div></div>
-      <div class="sec"><div class="sec-h">${t('availability')}</div><div class="avail">${rows}</div></div>
-      <button class="btn primary" data-act="reserve">${t('reserve')}</button>
+      ${storeSec}
+      ${payHTML(it)}
+      <button class="btn primary" data-act="reserve">${soonSel ? t('reserve_soon') : t('reserve')}</button>
       <button class="btn" data-act="ask">${ICON.chat} ${t('ask')}</button>
       <button class="btn link" data-act="share">${t('share')}</button>
       <p class="note">${t('same_price')}</p>
     </div>`;
+  // точки галереи следуют за прокруткой фото
+  const g = $('#gal'), dots = $('#dots');
+  if (g && dots) g.addEventListener('scroll', () => {
+    const i = Math.round(g.scrollLeft / g.clientWidth);
+    [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
+  }, { passive: true });
+}
+function infoHTML(it){
+  const info = it.info || {}, lab = INFO_LABELS[S.lang] || INFO_LABELS.uz;
+  const rows = Object.keys(lab).filter(k => info[k]).map(k => `<div class="kv"><span>${lab[k]}</span><b>${esc(info[k])}</b></div>`).join('');
+  return (rows ? `<div class="kvs">${rows}</div>` : '') + (it.description ? `<p class="desc">${esc(it.description)}</p>` : '');
+}
+// рассрочка: для всех товаров, кроме товаров со скидкой (old_price или sale)
+const nasiyaOK = it => !!(CONFIG.NASIYA && it.price && it.price >= (CONFIG.NASIYA.min_price || 0) && !it.old_price && !it.sale);
+const monthly = it => { const n = CONFIG.NASIYA, r = n.round_to || 1; return Math.ceil(it.price / n.months / r) * r; };
+function payLabel(p){
+  if (p === 'uzum' || p === 'alif') return `${CONFIG.NASIYA.providers[p === 'uzum' ? 0 : 1]} (0% · ${CONFIG.NASIYA.months} ${t('mon')})`;
+  return t('pay_cash');
+}
+function payHTML(it){
+  if (!nasiyaOK(it)) return '';
+  const pv = CONFIG.NASIYA.providers;
+  const opt = (id, label, zero) => `<button class="pay ${S.pay === id ? 'on' : ''}" data-pay="${id}">${esc(label)}${zero ? '<small>0%</small>' : ''}</button>`;
+  return `<div class="sec"><div class="sec-h">${t('pay_h')}</div><div class="pays">${opt('cash', t('pay_cash'))}${opt('uzum', pv[0], 1)}${opt('alif', pv[1], 1)}</div>
+    <div class="payinfo">${esc(t('nas_line', CONFIG.NASIYA.months, fmtPrice(monthly(it))))} · ${esc(pv.join(' · '))}</div></div>`;
+}
+// магазин по умолчанию: выбранный в фильтре, иначе первый, где размер есть
+function defaultStore(it){
+  if (S.store) return S.store;
+  const s = STORES.find(s => qty(it, S.pcolor, S.psize, s.id) > 0);
+  return s ? s.id : null;
 }
 
-/* ---------- «Отложить» ---------- */
+/* ---------- «Отложить» / «Заказать» ---------- */
+function flashSec(id){
+  const el = $('#' + id); if (!el) return;
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  el.scrollIntoView({ behavior:'smooth', block:'center' });
+}
 function openReserve(){
   const it = BY_ID[S.pid], c = S.pcolor;
-  if (S.psize == null) {
-    toast(t('pick_size_first'));
-    const el = $('#pvSizes'); el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
-    el.scrollIntoView({behavior:'smooth', block:'center'});
-    return;
-  }
-  const stores = STORES.filter(s => qty(it, c, S.psize, s.id) > 0);
-  S.rstore = stores.find(s => s.id === S.store) ? S.store : (stores.length === 1 ? stores[0].id : null);
-  renderReserve(stores);
-}
-function renderReserve(stores){
-  const it = BY_ID[S.pid], c = S.pcolor;
-  const list = stores.map(s => {
-    const q = qty(it, c, S.psize, s.id);
-    return optRow('data-rstore', s.id, `${esc(s.name)} <small>· ${esc(L(s.city))}</small>`, q === 1 ? t('last_one') : null, S.rstore === s.id);
-  }).join('');
-  openSheet(`<h3>${t('reserve_title')}</h3>
+  if (S.psize == null) { toast(t('pick_size_first')); flashSec('pvSizes'); return; }
+  if (!S.pstore) { toast(t('pick_store_first')); flashSec('pvStores'); return; }
+  const st = STORES.find(s => s.id === S.pstore), soon = qty(it, c, S.psize, S.pstore) === 0;
+  openSheet(`<h3>${soon ? t('order_title') : t('reserve_title')}</h3>
     <div class="sum"><div class="ph">${photoHTML(it, c)}</div>
-      <div><div class="y">${esc(titleOf(it))}</div><div class="x">${esc(colorName(c))} · ${t('size')} ${S.psize}</div><div class="y">${fmtPrice(it.price)}</div></div></div>
-    <div class="grp">${t('pick_store')}</div>${list}
-    <button class="btn primary" data-act="confirm" ${S.rstore ? '' : 'disabled'}>${t('confirm')}</button>
-    <p class="note">${t('reserve_note')}</p>`);
+      <div><div class="y">${esc(titleOf(it))}</div>
+        <div class="x">${esc(colorName(c))} · ${t('size')} ${S.psize}</div>
+        <div class="x">${esc(st ? L(st.name) : '')} · ${soon ? '🚚 ' + t('soon') : '✓ ' + t('now')}</div>
+        ${nasiyaOK(it) ? `<div class="x">${t('pay_h')}: ${esc(payLabel(S.pay))}</div>` : ''}
+        <div class="y">${fmtPrice(it.price)}</div></div></div>
+    <button class="btn primary" data-act="confirm">${t('confirm')}</button>
+    <p class="note">${soon ? t('soon_note') : t('reserve_note')}</p>`);
 }
 async function confirmReserve(btn){
   const it = BY_ID[S.pid];
   btn.disabled = true; btn.textContent = t('sending');
-  const payload = { id: it.id, name: titleOf(it), color: S.pcolor, size: S.psize, store: S.rstore, price: it.price, lang: S.lang };
+  const payload = { id: it.id, name: titleOf(it), color: S.pcolor, size: S.psize, store: S.pstore,
+                    in_stock: qty(it, S.pcolor, S.psize, S.pstore) > 0, price: it.price, lang: S.lang,
+                    payment: nasiyaOK(it) ? S.pay : 'cash' };
   let ok = false, demo = false;
   try {
     if (!CONFIG.API_BASE || !IN_TG) { demo = true; await new Promise(r => setTimeout(r, 500)); ok = true; }
@@ -632,18 +816,32 @@ async function confirmReserve(btn){
 /* ---------- «Спросить» и «Отправить подруге» ---------- */
 // защита: ссылка уходит только если username похож на настоящего бота (…bot)
 const BOT_OK = /^[A-Za-z0-9_]{5,32}$/.test(CONFIG.BOT_USERNAME) && /bot$/i.test(CONFIG.BOT_USERNAME);
+const MANAGER_OK = /^[A-Za-z0-9_]{5,32}$/.test(CONFIG.MANAGER_USERNAME);
+function modelLine(){
+  const it = BY_ID[S.pid], st = STORES.find(s => s.id === S.pstore);
+  let m = `${titleOf(it)}${it.name !== it.id ? `, ${t('art')} ${it.id}` : ''}, ${colorName(S.pcolor)}`;
+  if (S.psize != null) m += `, ${t('size').toLowerCase()} ${S.psize}`;
+  if (S.psize != null && st) m += `, ${L(st.name)}`;
+  if (nasiyaOK(it) && S.pay !== 'cash') m += `, ${payLabel(S.pay)}`;
+  return m;
+}
+// «Спросить менеджера»: личка менеджера, в поле ввода уже готовый текст с моделью
 function askManager(){
-  if (!BOT_OK) { toast(t('not_ready')); return; }
-  const url = `https://t.me/${CONFIG.BOT_USERNAME}?start=ask_${encodeURIComponent(S.pid)}`;
+  if (!MANAGER_OK) { toast(t('not_ready')); return; }
+  const url = `https://t.me/${CONFIG.MANAGER_USERNAME}?text=${encodeURIComponent(t('ask_text', modelLine()))}`;
   if (IN_TG) tg.openTelegramLink(url); else window.open(url, '_blank');
 }
+// «Отправить подруге»: 'app' — ссылка открывает каталог на этой модели;
+// 'bot' — ссылка на бота, бот присылает фото-карточку (r… — кто поделился)
 function shareItem(){
   if (!BOT_OK) { toast(t('not_ready')); return; }
-  const it = BY_ID[S.pid];
-  const link = CONFIG.APP_SHORT_NAME
-    ? `https://t.me/${CONFIG.BOT_USERNAME}/${CONFIG.APP_SHORT_NAME}?startapp=p_${encodeURIComponent(it.id)}`
-    : `https://t.me/${CONFIG.BOT_USERNAME}?startapp=p_${encodeURIComponent(it.id)}`;
-  const text = `Molto Caldo · ${titleOf(it)} · ${fmtPrice(it.price)}`;
+  const it = BY_ID[S.pid], k = keyOf(it);
+  const uid = IN_TG && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '';
+  let link;
+  if (CONFIG.SHARE_VIA === 'bot') link = `https://t.me/${CONFIG.BOT_USERNAME}?start=m_${k}${uid ? '__r' + uid : ''}`;
+  else link = CONFIG.APP_SHORT_NAME ? `https://t.me/${CONFIG.BOT_USERNAME}/${CONFIG.APP_SHORT_NAME}?startapp=p_${k}`
+                                    : `https://t.me/${CONFIG.BOT_USERNAME}?startapp=p_${k}`;
+  const text = t('share_text', titleOf(it), fmtPrice(it.price));
   const share = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
   if (IN_TG) { tg.openTelegramLink(share); return; }
   if (navigator.share) { navigator.share({ title: 'Molto Caldo', text, url: link }).catch(() => {}); return; }
@@ -697,11 +895,10 @@ function bind(){
   $('#sheet').onclick = e => {
     const b = e.target.closest('button'); if (!b || b.disabled) return;
     const d = b.dataset;
-    if ('size' in d)  { S.size = d.size === '' ? null : +d.size; closeSheet(); renderChips(); renderFilters(); renderGrid(); return; }
+    if ('size' in d)  { S.size = d.size === '' ? null : d.size; closeSheet(); renderChips(); renderFilters(); renderGrid(); return; }
     if ('sort' in d)  { S.sort = d.sort; closeSheet(); renderFilters(); renderGrid(); return; }
     if ('price' in d) { S.price = d.price; closeSheet(); renderChips(); renderFilters(); renderGrid(); return; }
     if ('store' in d) { S.store = d.store || null; closeSheet(); renderChips(); renderFilters(); renderGrid(); return; }
-    if ('rstore' in d){ S.rstore = d.rstore; haptic(); renderReserve(STORES.filter(s => qty(BY_ID[S.pid], S.pcolor, S.psize, s.id) > 0)); return; }
     if (d.act === 'confirm') { confirmReserve(b); return; }
     if (d.act === 'close') { closeSheet(); return; }
     if (d.act === 'phone') { try { tg.requestContact(ok => { if (ok) toast(t('thanks')); closeSheet(); }); } catch(err) { closeSheet(); } return; }
@@ -711,7 +908,9 @@ function bind(){
     const b = e.target.closest('button'); if (!b || b.disabled) return;
     const d = b.dataset;
     if ('color' in d) { S.pcolor = d.color; if (S.psize != null && !hasStock(BY_ID[S.pid], S.psize, null, S.pcolor)) S.psize = null; haptic(); renderProduct(); return; }
-    if ('psize' in d) { S.psize = S.psize === +d.psize ? null : +d.psize; haptic(); renderProduct(); return; }
+    if ('psize' in d) { S.psize = S.psize === d.psize ? null : d.psize; S.pstore = S.psize != null ? defaultStore(BY_ID[S.pid]) : null; haptic(); renderProduct(); return; }
+    if ('pstore' in d) { S.pstore = d.pstore; haptic(); renderProduct(); return; }
+    if ('pay' in d)    { S.pay = d.pay; haptic(); renderProduct(); return; }
     switch (d.act) {
       case 'back': closeProduct(); break;
       case 'fav': toggleFav(S.pid); renderProduct(); renderChrome(); { const g = document.querySelector(`.fav[data-fav="${CSS.escape(S.pid)}"]`); if (g) g.classList.toggle('on', FAVS.has(S.pid)); } break;
@@ -739,7 +938,7 @@ async function loadCatalog(){
   }
   STORES = DATA.stores || [];
   ITEMS = (DATA.items || []).map(prep).filter(it => it._total > 0);
-  BY_ID = {}; ITEMS.forEach(it => BY_ID[it.id] = it);
+  BY_ID = {}; BY_KEY = {}; ITEMS.forEach(it => { BY_ID[it.id] = it; BY_KEY[keyOf(it)] = it; });
 }
 
 function startLang(cb){
@@ -761,9 +960,10 @@ async function init(){
   renderAll();
   // прямая ссылка на модель: t.me/<бот>/<app>?startapp=p_<артикул>
   const sp = (IN_TG && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || new URLSearchParams(location.search).get('tgWebAppStartParam') || '';
-  if (sp.startsWith('p_') && BY_ID[decodeURIComponent(sp.slice(2))]) {
+  const target = sp.startsWith('p_') ? (BY_KEY[sp.slice(2)] || BY_ID[decodeURIComponent(sp.slice(2))]) : null;
+  if (target) {
     S.entryDirect = true;
-    history.replaceState(null, '', '#p=' + encodeURIComponent(decodeURIComponent(sp.slice(2))));
+    history.replaceState(null, '', '#p=' + encodeURIComponent(target.id));
   }
   route();
 }
