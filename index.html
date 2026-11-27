@@ -880,7 +880,8 @@ function bind(){
   $('#langBtn').onclick = () => { S.lang = { uz:'ru', ru:'en', en:'uz' }[S.lang]; KV.set('lang', S.lang); haptic(); renderAll(); };
   $('#favBtn').onclick = () => { S.favOnly = !S.favOnly; haptic(); renderChrome(); renderChips(); renderFilters(); renderGrid(); window.scrollTo(0, 0); };
   $('#resetBtn').onclick = () => { Object.assign(S, { cat:'all', size:null, store:null, price:'all', sort:'default', q:'', favOnly:false }); $('#q').value = ''; renderChrome(); renderChips(); renderFilters(); renderGrid(); };
-  let qt; $('#q').addEventListener('input', e => { clearTimeout(qt); qt = setTimeout(() => { S.q = e.target.value.trim().toLowerCase(); renderChips(); renderFilters(); renderGrid(); }, 150); });
+  // поиск по артикулу ищет во всём каталоге: при начале ввода категория сбрасывается на «Все»
+  let qt; $('#q').addEventListener('input', e => { clearTimeout(qt); qt = setTimeout(() => { const q = e.target.value.trim().toLowerCase(); if (q && !S.q && S.cat !== 'all') S.cat = 'all'; S.q = q; renderChips(); renderFilters(); renderGrid(); }, 150); });
 
   $('#chips').onclick = e => { const b = e.target.closest('[data-cat]'); if (!b) return; S.cat = b.dataset.cat; haptic(); renderChips(); renderFilters(); renderGrid(); b.scrollIntoView({ inline:'center', block:'nearest', behavior:'smooth' }); };
   $('#filters').onclick = e => { const b = e.target.closest('[data-f]'); if (!b) return; haptic(); ({ size: sheetSize, price: sheetPrice, store: sheetStore })[b.dataset.f](); };
