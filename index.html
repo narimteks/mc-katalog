@@ -510,6 +510,9 @@ function prep(it, idx){
       if (q > 0) { sizes.add(String(sz)); stores.add(sid); total += q; any = true; }
     return any;
   });
+  // цвета с вашими фото — первыми: в сетке и в карточке сразу видно фото, а не силуэт
+  const hasPh = c => !!(it.photos && ((it.photos[c] || []).length));
+  colors.sort((a, b) => hasPh(b) - hasPh(a));
   it._idx = idx; it._colors = colors; it._sizes = [...sizes].sort(sizeCmp); it._stores = stores; it._total = total;
   it._q = [it.id, it.name, it.category, CATS[it.category] ? Object.values(CATS[it.category].one).join(' ') : ''].join(' ').toLowerCase();
   return it;
@@ -825,10 +828,19 @@ function modelLine(){
   if (nasiyaOK(it) && S.pay !== 'cash') m += `, ${payLabel(S.pay)}`;
   return m;
 }
+// страница модели (её превью в Telegram = фото модели); есть только у моделей с вашими фото
+function pageUrl(it, color){
+  const p = it && it.pages;
+  const rel = p && (p[color] || p['*']);
+  try { return rel ? new URL(rel, location.href).href : ''; } catch(e) { return ''; }
+}
 // «Спросить менеджера»: личка менеджера, в поле ввода уже готовый текст с моделью
+// + ссылка на страницу модели — Telegram покажет под сообщением фото выбранного цвета
 function askManager(){
   if (!MANAGER_OK) { toast(t('not_ready')); return; }
-  const url = `https://t.me/${CONFIG.MANAGER_USERNAME}?text=${encodeURIComponent(t('ask_text', modelLine()))}`;
+  const pu = pageUrl(BY_ID[S.pid], S.pcolor);
+  const msg = t('ask_text', modelLine()) + (pu ? '\n' + pu : '');
+  const url = `https://t.me/${CONFIG.MANAGER_USERNAME}?text=${encodeURIComponent(msg)}`;
   if (IN_TG) tg.openTelegramLink(url); else window.open(url, '_blank');
 }
 // «Отправить подруге»: 'app' — ссылка открывает каталог на этой модели;
@@ -839,8 +851,9 @@ function shareItem(){
   const uid = IN_TG && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '';
   let link;
   if (CONFIG.SHARE_VIA === 'bot') link = `https://t.me/${CONFIG.BOT_USERNAME}?start=m_${k}${uid ? '__r' + uid : ''}`;
-  else link = CONFIG.APP_SHORT_NAME ? `https://t.me/${CONFIG.BOT_USERNAME}/${CONFIG.APP_SHORT_NAME}?startapp=p_${k}`
-                                    : `https://t.me/${CONFIG.BOT_USERNAME}?startapp=p_${k}`;
+  else link = pageUrl(it, S.pcolor)       // есть фото → ссылка с превью-фото, по нажатию открывает каталог
+           || (CONFIG.APP_SHORT_NAME ? `https://t.me/${CONFIG.BOT_USERNAME}/${CONFIG.APP_SHORT_NAME}?startapp=p_${k}`
+                                     : `https://t.me/${CONFIG.BOT_USERNAME}?startapp=p_${k}`);
   const text = t('share_text', titleOf(it), fmtPrice(it.price));
   const share = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
   if (IN_TG) { tg.openTelegramLink(share); return; }
